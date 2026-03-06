@@ -1,0 +1,99 @@
+body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1e293b;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+}
+
+h1 {
+    text-align: center;
+    color: #22d3ee;
+}
+
+.subtitle {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #94a3b8;
+}
+
+.question {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #334155;
+    border-radius: 5px;
+}
+
+select {
+    float: right;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #22d3ee;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #06b6d4;
+}
+
+#result {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #0f172a;
+}
+
+.checklist {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.checklist li {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    background-color: #1e293b;
+    border-left: 4px solid #94a3b8;
+}
+
+.checklist li.yes {
+    border-left-color: #22c55e;
+    background-color: rgba(34, 197, 94, 0.1);
+}
+
+.checklist li.no {
+    border-left-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.checklist .icon {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.checklist li.yes .icon {
+    color: #22c55e;
+}
+
+.checklist li.no .icon {
+    color: #ef4444;
+}
