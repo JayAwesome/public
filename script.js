@@ -111,37 +111,82 @@ const RISK_CONFIG = {
   },
 };
 
-function showRiskModal(data) {
+const UNKNOWN_RISK_LEVEL = 'Unknown Risk';
+const RISK_MODAL_FADE_MS = 400;
+
+let riskModalHideTimeoutId = null;
+let riskModalHandlersInitialized = false;
+
+function closeRiskModal(_event) {
   const modal = document.getElementById('riskModal');
-  const config = RISK_CONFIG[data.riskLevel] || RISK_CONFIG['Medium Risk'];
+  if (!modal) return;
+
+  modal.setAttribute('data-visible', 'false');
+
+  if (riskModalHideTimeoutId !== null) {
+    clearTimeout(riskModalHideTimeoutId);
+    riskModalHideTimeoutId = null;
+  }
+
+  riskModalHideTimeoutId = setTimeout(() => {
+    // Only hide if it hasn't been reopened.
+    if (modal.getAttribute('data-visible') === 'true') return;
+    modal.setAttribute('hidden', '');
+    riskModalHideTimeoutId = null;
+    document.body.style.overflow = '';
+    document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, RISK_MODAL_FADE_MS);
+}
+
+function handleRiskModalEscape(e) {
+  if (e.key !== 'Escape') return;
+  const modal = document.getElementById('riskModal');
+  if (!modal) return;
+  if (modal.getAttribute('data-visible') !== 'true') return;
+  closeRiskModal();
+}
+
+function initRiskModalHandlers() {
+  if (riskModalHandlersInitialized) return;
+  riskModalHandlersInitialized = true;
+
+  const modal = document.getElementById('riskModal');
+  if (!modal) return;
+
+  document.getElementById('riskModalClose')?.addEventListener('click', closeRiskModal);
+  modal.querySelector('.risk-modal-backdrop')?.addEventListener('click', closeRiskModal);
+  document.addEventListener('keydown', handleRiskModalEscape);
+}
+
+function showRiskModal(data) {
+  initRiskModalHandlers();
+
+  const modal = document.getElementById('riskModal');
+  const rawRiskLevel = typeof data?.riskLevel === 'string' ? data.riskLevel.trim() : '';
+  const config = RISK_CONFIG[rawRiskLevel] || {
+    class: 'unknown-risk',
+    icon: '❓',
+    message: 'We received an unexpected risk level. Please use your score and answers below to review your results.',
+  };
+  const titleRiskLevel = RISK_CONFIG[rawRiskLevel] ? rawRiskLevel : UNKNOWN_RISK_LEVEL;
+
+  // If a previous close scheduled a hide, cancel it so it can't
+  // accidentally hide a newly reopened modal.
+  if (riskModalHideTimeoutId !== null) {
+    clearTimeout(riskModalHideTimeoutId);
+    riskModalHideTimeoutId = null;
+  }
 
   modal.className = `risk-modal ${config.class}`;
   document.getElementById('riskModalIcon').textContent = config.icon;
-  document.getElementById('riskModalTitle').textContent = data.riskLevel.toUpperCase();
+  document.getElementById('riskModalTitle').textContent = titleRiskLevel.toUpperCase();
   document.getElementById('riskModalScore').textContent = `Score: ${data.riskScore} / 12`;
   document.getElementById('riskModalMessage').textContent = config.message;
 
   modal.removeAttribute('hidden');
   modal.setAttribute('data-visible', 'true');
   document.body.style.overflow = 'hidden';
-
-  const escHandler = (e) => {
-    if (e.key === 'Escape') closeModal();
-  };
-
-  const closeModal = () => {
-    modal.setAttribute('data-visible', 'false');
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', escHandler);
-    setTimeout(() => {
-      modal.setAttribute('hidden', '');
-      document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 400);
-  };
-
-  document.getElementById('riskModalClose').onclick = closeModal;
-  modal.querySelector('.risk-modal-backdrop').onclick = closeModal;
-  document.addEventListener('keydown', escHandler);
+  document.getElementById('riskModalClose')?.focus();
 }
 
 function displayResults(data) {
