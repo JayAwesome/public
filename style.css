@@ -356,6 +356,22 @@ button:active {
     color: white;
 }
 
+/* Unknown Risk - Neutral / Info */
+.risk-modal.unknown-risk .risk-modal-inner {
+    background: linear-gradient(145deg, #0b1220 0%, #111c33 50%, #162a4f 100%);
+    border: 2px solid #60a5fa;
+    box-shadow: 0 0 40px rgba(96, 165, 250, 0.35);
+}
+
+.risk-modal.unknown-risk .risk-modal-icon { color: #93c5fd; }
+.risk-modal.unknown-risk .risk-modal-title { color: #bfdbfe; }
+.risk-modal.unknown-risk .risk-modal-score { color: #dbeafe; }
+.risk-modal.unknown-risk .risk-modal-message { color: #bfdbfe; }
+.risk-modal.unknown-risk .risk-modal-btn {
+    background: #60a5fa;
+    color: #0b1220;
+}
+
 /* Tablet Styles (480px and up) */
 @media (min-width: 480px) {
     .container {
