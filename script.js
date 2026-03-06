@@ -1,13 +1,6 @@
 let currentAssessmentId = null;
 let currentAnswers = null;
 
-// Prevent pinch zoom on form inputs for better UX
-document.addEventListener('touchmove', (e) => {
-  if (e.scale !== 1) {
-    e.preventDefault();
-  }
-}, { passive: false });
-
 async function readJsonOrText(response) {
   const contentType = response.headers.get('content-type') || '';
   const text = await response.text();
@@ -212,10 +205,16 @@ function showRiskModal(data) {
   document.getElementById('riskModalScore').textContent = `Score: ${data.riskScore} / 12`;
   document.getElementById('riskModalMessage').textContent = config.message;
 
+  const wasVisible = modal.getAttribute('data-visible') === 'true' && !modal.hasAttribute('hidden');
   modal.removeAttribute('hidden');
-  modal.setAttribute('data-visible', 'true');
   document.body.style.overflow = 'hidden';
-  document.getElementById('riskModalClose')?.focus();
+
+  // Re-trigger the entrance animation if the modal was already visible.
+  if (wasVisible) modal.setAttribute('data-visible', 'false');
+  requestAnimationFrame(() => {
+    modal.setAttribute('data-visible', 'true');
+    document.getElementById('riskModalClose')?.focus();
+  });
 }
 
 function displayResults(data) {
