@@ -81,10 +81,67 @@ async function handleFormSubmit(e) {
 
     displayResults(data);
     document.getElementById('downloadPdf').style.display = 'block';
+    showRiskModal(data);
   } catch (error) {
     console.error('Detailed error:', error);
     alert('Failed to submit assessment: ' + error.message);
   }
+}
+
+const RISK_CONFIG = {
+  'Low Risk': {
+    class: 'low-risk',
+    icon: '✓',
+    message: 'Your cybersecurity posture is strong. Keep up the great work and stay vigilant.',
+  },
+  'Medium Risk': {
+    class: 'medium-risk',
+    icon: '⚠',
+    message: 'Some gaps need attention. Address the items below to strengthen your defenses.',
+  },
+  'High Risk': {
+    class: 'high-risk',
+    icon: '🔥',
+    message: 'Urgent action required. Multiple vulnerabilities put your business at risk.',
+  },
+  'Critical Risk': {
+    class: 'critical-risk',
+    icon: '🚨',
+    message: 'Immediate attention required. Your organization is at severe risk of a security incident.',
+  },
+};
+
+function showRiskModal(data) {
+  const modal = document.getElementById('riskModal');
+  const config = RISK_CONFIG[data.riskLevel] || RISK_CONFIG['Medium Risk'];
+
+  modal.className = `risk-modal ${config.class}`;
+  document.getElementById('riskModalIcon').textContent = config.icon;
+  document.getElementById('riskModalTitle').textContent = data.riskLevel.toUpperCase();
+  document.getElementById('riskModalScore').textContent = `Score: ${data.riskScore} / 12`;
+  document.getElementById('riskModalMessage').textContent = config.message;
+
+  modal.removeAttribute('hidden');
+  modal.setAttribute('data-visible', 'true');
+  document.body.style.overflow = 'hidden';
+
+  const escHandler = (e) => {
+    if (e.key === 'Escape') closeModal();
+  };
+
+  const closeModal = () => {
+    modal.setAttribute('data-visible', 'false');
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', escHandler);
+    setTimeout(() => {
+      modal.setAttribute('hidden', '');
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 400);
+  };
+
+  document.getElementById('riskModalClose').onclick = closeModal;
+  modal.querySelector('.risk-modal-backdrop').onclick = closeModal;
+  document.addEventListener('keydown', escHandler);
 }
 
 function displayResults(data) {
