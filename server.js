@@ -176,7 +176,8 @@ app.post('/api/generate-pdf', submitLimiter, csrfProtection, (req, res) => {
 
     doc.text('Detailed Answers:', { underline: true });
     answers.forEach((answer, index) => {
-      doc.text(`${index + 1}. ${questions[index]}: ${answer === 0 ? 'Yes' : 'No'}`);
+      const answerValue = parseInt(answer);
+      doc.text(`${index + 1}. ${questions[index]}: ${answerValue === 0 ? 'Yes' : 'No'}`);
     });
 
     doc.moveDown();

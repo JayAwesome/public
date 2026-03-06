@@ -82,7 +82,8 @@ function displayResults(data) {
   
   let checklistHtml = '<ul class="checklist">';
   currentAnswers.forEach((answer, index) => {
-    const isYes = answer === '0';
+    const answerValue = parseInt(answer);
+    const isYes = answerValue === 0;
     const icon = isYes ? '✓' : '✗';
     const className = isYes ? 'yes' : 'no';
     checklistHtml += `<li class="${className}"><span class="icon">${icon}</span> ${index + 1}. ${questions[index]}: <strong>${isYes ? 'Yes' : 'No'}</strong></li>`;
