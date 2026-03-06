@@ -39,13 +39,18 @@ app.use(cors({
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: 'Too many requests, please try again later',
+  handler: (req, res) => {
+    res.status(429).json({ error: 'Too many requests, please try again later.' });
+  },
 });
 
 const submitLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 10,
   skip: (req) => req.user?.isAdmin,
+  handler: (req, res) => {
+    res.status(429).json({ error: 'Too many assessment submissions. Please wait and try again later.' });
+  },
 });
 
 app.use(limiter);

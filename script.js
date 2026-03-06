@@ -8,6 +8,26 @@ document.addEventListener('touchmove', (e) => {
   }
 }, { passive: false });
 
+async function readJsonOrText(response) {
+  const contentType = response.headers.get('content-type') || '';
+  const text = await response.text();
+
+  if (contentType.includes('application/json')) {
+    try {
+      return { kind: 'json', data: JSON.parse(text), text };
+    } catch {
+      return { kind: 'text', data: null, text };
+    }
+  }
+
+  // Some middleware may respond with plain text even on API routes (e.g. rate limiting).
+  try {
+    return { kind: 'json', data: JSON.parse(text), text };
+  } catch {
+    return { kind: 'text', data: null, text };
+  }
+}
+
 // Fetch CSRF token on page load
 document.addEventListener('DOMContentLoaded', () => {
   // Set viewport for mobile optimization
@@ -68,12 +88,21 @@ async function handleFormSubmit(e) {
     });
 
     console.log('Response status:', response.status);
-    const data = await response.json();
-    console.log('Response data:', data);
+    const parsed = await readJsonOrText(response);
+    const data = parsed.kind === 'json' ? parsed.data : null;
+    console.log('Response data:', data ?? parsed.text);
 
     if (!response.ok) {
-      alert(`Error: ${data.error}`);
+      const msg =
+        (data && typeof data.error === 'string' && data.error) ||
+        (parsed.text && parsed.text.trim()) ||
+        `Request failed (HTTP ${response.status})`;
+      alert(`Error: ${msg}`);
       return;
+    }
+
+    if (!data || typeof data !== 'object') {
+      throw new Error(`Unexpected server response (HTTP ${response.status})`);
     }
 
     currentAssessmentId = data.assessmentId;
