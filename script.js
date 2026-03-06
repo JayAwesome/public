@@ -1,8 +1,24 @@
 let currentAssessmentId = null;
 let currentAnswers = null;
 
+// Prevent pinch zoom on form inputs for better UX
+document.addEventListener('touchmove', (e) => {
+  if (e.scale !== 1) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
 // Fetch CSRF token on page load
 document.addEventListener('DOMContentLoaded', () => {
+  // Set viewport for mobile optimization
+  const viewport = document.querySelector('meta[name="viewport"]');
+  if (!viewport) {
+    const meta = document.createElement('meta');
+    meta.name = 'viewport';
+    meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';
+    document.head.appendChild(meta);
+  }
+
   fetch('/api/csrf-token')
     .then(res => res.json())
     .then(data => {
@@ -13,6 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('riskForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('downloadPdf').addEventListener('click', downloadPdf);
+
+  // Add input feedback on mobile
+  const selects = document.querySelectorAll('.answer');
+  selects.forEach(select => {
+    select.addEventListener('change', () => {
+      select.style.borderColor = '#22d3ee';
+    });
+  });
 });
 
 async function handleFormSubmit(e) {
