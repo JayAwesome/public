@@ -71,7 +71,7 @@ app.use(cookieParser());
 const csrfProtection = csrf({ cookie: true });
 
 // Serve static files
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
 // Logging Middleware
 app.use((req, res, next) => {
@@ -80,9 +80,6 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
 
 app.get('/api/csrf-token', csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
@@ -220,6 +217,11 @@ function logAssessment(assessmentId, riskScore, ip) {
   const logEntry = `[${new Date().toISOString()}] Assessment ${assessmentId} - Risk Score: ${riskScore} - IP: ${ip}\n`;
   fs.appendFileSync('logs/assessments.log', logEntry, { flag: 'a' });
 }
+
+// React Router Catch-All
+app.get(/(.*)/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
+});
 
 // Error Handling
 app.use((err, req, res, next) => {
