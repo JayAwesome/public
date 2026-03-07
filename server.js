@@ -36,19 +36,24 @@ app.use(cors({
 }));
 
 // Rate Limiting
+const isProduction = process.env.NODE_ENV === 'production';
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: 'Too many requests, please try again later',
+  max: isProduction ? 100 : 1000,
+  handler: (req, res) => {
+    res.status(429).json({ error: 'Too many requests, please try again later.' });
+  },
 });
 
 const submitLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 10,
+  max: isProduction ? 10 : 200,
   skip: (req) => req.user?.isAdmin,
+  handler: (req, res) => {
+    res.status(429).json({ error: 'Too many assessment submissions. Please wait and try again later.' });
+  },
 });
-
-app.use(limiter);
 
 // Session Configuration
 app.use(session({
@@ -72,6 +77,9 @@ const csrfProtection = csrf({ cookie: true });
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'client/dist')));
+
+// Apply general rate limiting to API routes only (exclude static assets)
+app.use('/api', limiter);
 
 // Logging Middleware
 app.use((req, res, next) => {
