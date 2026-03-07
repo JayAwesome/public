@@ -4,9 +4,8 @@
   "description": "SME Cybersecurity Risk Self-Assessment Tool",
   "main": "server.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+  "start": "node server.js",
+  "dev": "node server.js"
   }
   },
   "keywords": [
@@ -40,4 +39,5 @@
     "url": "https://github.com/JayAwesome/cybersafe-local.git"
   }
 }
+
 
