@@ -77,8 +77,9 @@ const csrfProtection = csrf({ cookie: true });
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'client')));
-// Apply general rate limiting to API routes only (exclude static assets)
-app.use('/api', limiter);
+app.get(/(.*)/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'index.html'));
+});
 
 // Logging Middleware
 app.use((req, res, next) => {
@@ -246,3 +247,4 @@ app.listen(PORT, () => {
   if (!fs.existsSync('logs')) fs.mkdirSync('logs');
 
 });
+
