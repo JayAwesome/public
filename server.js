@@ -76,8 +76,7 @@ app.use(cookieParser());
 const csrfProtection = csrf({ cookie: true });
 
 // Serve static files
-app.use(express.static(path.join(__dirname, 'client/dist')));
-
+app.use(express.static(path.join(__dirname, 'client')));
 // Apply general rate limiting to API routes only (exclude static assets)
 app.use('/api', limiter);
 
@@ -228,7 +227,7 @@ function logAssessment(assessmentId, riskScore, ip) {
 
 // React Router Catch-All
 app.get(/(.*)/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'client', 'index.html'));
 });
 
 // Error Handling
@@ -245,4 +244,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   if (!fs.existsSync('logs')) fs.mkdirSync('logs');
+
 });
